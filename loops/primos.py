@@ -4,10 +4,8 @@ inicio= time.time()#toma el valor del tiempo en que inicia
 time.sleep(1)
 for i in range (0,3):
     conta=0
-    print(i)
     for n in range(1,i+1):
         residuo=i%n
-        print(-n)
         if residuo == 0:
             conta= conta+1
     if conta==2: 
