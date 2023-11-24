@@ -1,0 +1,50 @@
+import network,time,urequests,BlynkLib
+import machine
+from machine import Pin,PWM,ADC
+#se asifgna la red wifi a al que se va conectar la esp32
+ssid="nombre red"
+password="contraseña red"
+#Se crea el objeto wifi
+wlan=network.WLAN(network.STA_IF)
+#se actvia el objeto
+wlan.active(True)
+#se conecta la red 
+wlan.connect(ssid,password)
+#espera hasta que se establezca la conexion
+while not wlan.isconnected():
+    pass
+
+#mostra la direccion ip
+ip_address=wlan.ifconfig()[0]
+print("conectado a la red wifi. Direccion IP:",ip_address)
+#encender el pin 2
+
+def reconectar():
+    print('fallo la conexion. reconectanod...')
+    time.sleep(10)
+    
+
+BLYNK_OUTH='coadigo de acceso de blynk'
+#inicialisando Blynk
+blynk=BlynkLib.Blynk(BLYNK_OUTH)
+frec=5000
+led=PWM(Pin(13),frec)
+poten= ADC(Pin(34))
+poten.width(ADC.WIDTH_10BIT)
+poten.atten(ADC.ATTN_11DB)
+
+
+while True:
+    try:
+        blynk.run()
+        
+        time.sleep(2)
+        potenciometro=(250/1023)*poten.read()
+        print(poten.read())
+        led.duty(int(potenciometro))
+        print(potenciometro)
+        time.sleep(0.1)
+        blynk.virtual_write(0,potenciometro)
+    except OSError as e:
+        reconectar()
+    
